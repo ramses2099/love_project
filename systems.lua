@@ -23,7 +23,13 @@ function Draw:draw(entity)
     if entity:length_components() > 0 then
         if entity:has_component("Position")then
             local pos = entity:get_component("Position")
-            love.graphics.rectangle("fill", pos.x, pos.y, 32, 32)
+            if entity:has_component("Color") then
+                local colr = entity:get_component("Color")
+                love.graphics.setColor(colr.r, colr.g, colr.b, colr.a)
+                love.graphics.rectangle("fill", pos.x, pos.y, 32, 32)
+            else    
+                love.graphics.rectangle("fill", pos.x, pos.y, 32, 32)
+            end
         end
     end
 end

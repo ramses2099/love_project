@@ -60,4 +60,21 @@ function Components.Movable(t)
     return self
 end
 
+----------------------------------------------------
+-- Component 5: Color
+----------------------------------------------------
+local Color = {}
+Color.__index = Color
+
+function Components.Color(r, g, b, a)
+    local self = Components.new("Color")
+    setmetatable(self, Color)
+    self.r = r
+    self.g = g
+    self.b = g
+    self.a = a or 1
+    return self
+end
+
+
 return Components
