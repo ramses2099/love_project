@@ -1,58 +1,67 @@
 local Entity = require("entity")
 
-local World = {
-    entities = {},
-    systems = {}
-}
+local World = {}
+World.__index = World
 
-function World:create()
-    local entity = Entity.new()
+function World.new()
+    local self = setmetatable({}, World)
+    self.entities = {}
+    self.systems = {}
+    return self
+end
+
+function World:register_system(system)
+    if self:len_entities() > 0 then
+        table.insert(self.systems, system)
+    end
+end
+
+function World:register_entity(entity)
     table.insert(self.entities, entity)
-    return entity
 end
 
-function World:register(system)
-    table.insert(self.systems, system)
+function World:len_systems()
+    return #self.systems
 end
+
+function World:len_entities()
+    return #self.entities
+end 
 
 function World:update(dt)
     for i = #self.entities, 1, -1 do
         local entity = self.entities[i]
         if entity.remove then
-            for i, system in ipairs(self.systems) do
-                if system:match(entity) then
-                    system:destroy(entity)                
-                end
-            end
-            
             table.remove(self.entities, i)
         else            
             for i, system in ipairs(self.systems) do
-                if system:match(entity) then
-                    if entity.loaded == false then
-                        system:load(entity)
+               if system.id == "Update_System" then
+                  if entity:has_component("Movable") then
+                    local comp_update = entity:get_component("Movable")
+                    if(comp_update.movable) then
+                        system:update(entity)                    
                     end
-                    system:update(dt, entity)
-                end
-            end
-            entity.loaded = true
+                  end
+               end                
+            end            
         end
     end
-
 end
 
 function World:draw()
     for i = 1, #self.entities do
         local entity = self.entities[i]
         for i, system in ipairs(self.systems) do
-            if system:match(entity) then                
-                if entity.loaded then
-                    system:draw(entity)
+            if system.id == "Draw_System" then
+                if entity:has_component("Drawable") then
+                    local comp_draw = entity:get_component("Drawable") 
+                    if (comp_draw.visible) then
+                        system:draw(entity)
+                    end                    
                 end
             end
         end
     end
-
 end
 
 return World

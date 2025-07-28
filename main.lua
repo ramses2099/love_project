@@ -1,59 +1,47 @@
 _G.love = require("love")
-local World = require("world")
-local Component = require("component")
+
+local Entity = require("entity")
 local Components = require("components")
-local System = require("system")
-
-function new_body(x, y)
-  local body = Component.new("body")
-  body.x = x
-  body.y = y
-  return body
-end
-
-function new_rect_component()
-  return Component.new("rect") 
-end
-
-function new_renderer_system()
-  local renderer = System.new({"body","rect","Position"})
-
-  function renderer:load(entity)
-    print('ok esto funciona')
-  end
-
-  function renderer:draw(entity)
-    local body = entity:get_component("body")
-    love.graphics.rectangle('fill', body.x, body.y, 32, 32) 
-        
-    love.graphics.rectangle('fill', 10, 10, 32, 32)
-
-    local body2 = entity:get_component("Position")
-    love.graphics.rectangle('fill', body2.x, body2.y, 32, 32)  
-  end
-
-  return renderer
-end
+local Systems = require("systems")
+local World = require("world")
 
 function love.load()
-  -- System --
-  World:register(new_renderer_system())
+  world = World.new()
   
-  -- Entities --
-  local entity = World:create()
-  entity:add_component(new_body(50, 50))
-  entity:add_component(new_rect_component())
+  -- System --
+  systems = Systems.new()
 
-  local enttiy02 = World:create()
-  enttiy02:add_component(Components:Position(250,250))
-  enttiy02:add_component(Components:Shape("rectn"))
+  -- Entity --
+  entity01 = Entity.new()
+  local pos = Components.Position(10, 30)
+  local drawable = Components.Drawable(true)
+  local shape = Components.Shape("rectangle")
+  local movable = Components.Movable(true)
 
+  entity02 = Entity.new()
+  local pos2 = Components.Position(250, 30)
+  
+  -- Componenet
+  entity01:add_component(pos)
+  entity01:add_component(drawable)
+  entity01:add_component(shape)
+  
+  entity02:add_component(pos2)
+  entity02:add_component(drawable)
+  entity02:add_component(shape)
+  entity02:add_component(movable)
+
+  world:register_entity(entity01)
+  world:register_entity(entity02)
+
+  world:register_system(Systems.Draw())
+  world:register_system(Systems.Update())
 end
 
 function love.update(dt)
-  World:update(dt)
+  world:update()
 end
 
 function love.draw()
-  World:draw()
+  world:draw()
 end
