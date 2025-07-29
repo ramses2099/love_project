@@ -11,7 +11,7 @@ function Entity.new()
 end
 
 function Entity:add_component(componet)
-    table.insert( self.components, componet)
+    table.insert(self.components, componet)
 end
 
 function Entity:get_component(id)
