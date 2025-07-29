@@ -19,6 +19,16 @@ function Manager:update(dt)
     end
 end
 
+function Manager:physics(dt)
+    for _, ent in ipairs(self.entities) do
+        for j, filter in ipairs(self.filters) do
+            if filter:matches(ent) then
+               filter:update(ent, dt)                
+            end
+        end        
+    end
+end
+
 function Manager:render()
     for _, ent in ipairs(self.entities) do
         for j, filter in ipairs(self.filters) do
